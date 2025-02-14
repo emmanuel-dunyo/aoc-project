@@ -12,55 +12,61 @@ describe('day-2', () => {
     reactor = new Reactor(data);
   });
 
-  test('should check levels are all increasing', () => {
-    const reportOne = reactor.reports[0];
-    const reportTwo = reactor.reports[1];
-    const reportThree = reactor.reports[2];
-    expect(reactor.checkLevelsIncrease(reportOne)).toBe(false);
-    expect(reactor.checkLevelsIncrease(reportTwo)).toBe(false);
-    expect(reactor.checkLevelsIncrease(reportThree)).toBe(true);
+  describe('Checking report levels', () => {
+    test('should check levels are all increasing', () => {
+      const reportOne = reactor.reports[0];
+      const reportTwo = reactor.reports[1];
+      const reportThree = reactor.reports[2];
+      expect(reactor.checkLevelsIncrease(reportOne)).toBe(false);
+      expect(reactor.checkLevelsIncrease(reportTwo)).toBe(false);
+      expect(reactor.checkLevelsIncrease(reportThree)).toBe(true);
+    });
+
+    test('should check levels are all decreasing', () => {
+      const reportOne = reactor.reports[3];
+      const reportTwo = reactor.reports[4];
+      const reportThree = reactor.reports[5];
+      const reportFour = [7, 6, 4, 2, 1];
+      expect(reactor.checkLevelsDecrease(reportOne)).toBe(false);
+      expect(reactor.checkLevelsDecrease(reportTwo)).toBe(false);
+      expect(reactor.checkLevelsDecrease(reportThree)).toBe(false);
+      expect(reactor.checkLevelsDecrease(reportFour)).toBe(true);
+    });
+
+    test('should check any two adjacent levels differ by at least one and at most three', () => {
+      const reportOne = reactor.reports[0];
+      const reportTwo = reactor.reports[10];
+      const reportThree = reactor.reports[1];
+      expect(reactor.checkDifferenceIsBetweenOneAndThree(reportOne)).toBe(true);
+      expect(reactor.checkDifferenceIsBetweenOneAndThree(reportTwo)).toBe(
+        false
+      );
+      expect(reactor.checkDifferenceIsBetweenOneAndThree(reportThree)).toBe(
+        false
+      );
+    });
   });
 
-  test('should check levels are all decreasing', () => {
-    const reportOne = reactor.reports[3];
-    const reportTwo = reactor.reports[4];
-    const reportThree = reactor.reports[5];
-    expect(reactor.checkLevelsDecrease(reportOne)).toBe(false);
-    expect(reactor.checkLevelsDecrease(reportTwo)).toBe(false);
-    expect(reactor.checkLevelsDecrease(reportThree)).toBe(false);
+  describe('Counting safe reports', () => {
+    test('should get the total number of safe reports', () => {
+      expect(reactor.count()).toBe(700);
+    });
   });
 
-  test('should check any two adjacent levels differ by at least one and at most three', () => {
-    const reportOne = reactor.reports[0];
-    const reportTwo = reactor.reports[10];
-    expect(reactor.checkDifferenceIsBetweenOneAndThree(reportOne)).toBe(true);
-    expect(reactor.checkDifferenceIsBetweenOneAndThree(reportTwo)).toBe(false);
-  });
+  describe('Tolerating a single bad level in a report', () => {
+    const dataProvider = [
+      { report: [7, 6, 4, 2, 1], expected: true },
+      { report: [1, 2, 7, 8, 9], expected: false },
+      { report: [9, 7, 6, 2, 1], expected: false },
+      { report: [1, 3, 2, 4, 5], expected: true },
+      { report: [8, 6, 4, 4, 1], expected: true },
+      { report: [1, 3, 6, 7, 9], expected: true },
+    ];
 
-  test('should get the total number of safe reports', () => {
-    expect(reactor.count()).toBe(700);
-  });
-
-  test('should make a level safe after removing a level', () => {
-    const reportOne = [7, 6, 4, 2, 1];
-    const reportTwo = [1, 2, 7, 8, 9]; // reactor.reports[6];
-    const reportThree = [9, 7, 6, 2, 1];
-    const reportFour = [1, 3, 2, 4, 5];
-    const reportFive = [8, 6, 4, 4, 1];
-    const reportSix = [1, 3, 6, 7, 9];
-
-    expect(reactor.dampenProblem(reportOne)).toBe(true);
-    expect(reactor.dampenProblem(reportTwo)).toBe(false);
-    expect(reactor.dampenProblem(reportThree)).toBe(false);
-    expect(reactor.dampenProblem(reportFour)).toBe(true);
-    expect(reactor.dampenProblem(reportFive)).toBe(true);
-    expect(reactor.dampenProblem(reportSix)).toBe(true);
-
-    const inputReportOne = reactor.reports[3];
-    const inputReportTwo = reactor.reports[4];
-    const inputReportThree = reactor.reports[5];
-    expect(reactor.dampenProblem(inputReportOne)).toBe(true);
-    expect(reactor.dampenProblem(inputReportTwo)).toBe(true);
-    expect(reactor.dampenProblem(inputReportThree)).toBe(false);
+    dataProvider.forEach((testCase) => {
+      it(`should make report ${testCase.report.toString()} safe if a single level is removed`, () => {
+        expect(reactor.dampenProblem(testCase.report)).toBe(testCase.expected);
+      });
+    });
   });
 });

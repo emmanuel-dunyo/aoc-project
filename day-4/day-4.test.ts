@@ -65,9 +65,6 @@ describe('Part 2 - Find X-MAS', () => {
     'M.M.M.M.M.\n' +
     '..........';
 
-  // const filePath = path.resolve(__dirname, 'day-4-input.txt');
-  // const data = fs.readFileSync(filePath, 'utf-8');
-
   const grid = new Grid(input);
 
   test(`should find all A's in input`, () => {
