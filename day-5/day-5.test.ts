@@ -15,23 +15,34 @@ beforeEach(() => {
 
 describe('day-5', () => {
   describe('should check the order of the page updates', () => {
-    const updatesProvider = [
-      { update: ['75', '47', '61', '53', '29'], expected: true },
-      { update: ['97', '61', '53', '29', '13'], expected: true },
-      { update: ['75', '29', '13'], expected: true },
-      { update: ['75', '97', '47', '61', '53'], expected: false },
-      { update: ['61', '13', '29'], expected: false },
-      { update: ['97', '13', '75', '29', '47'], expected: false },
-    ];
+    test('should check if 75,47,61,53,29 is ordered correctly', () => {
+      const update = [75, 47, 61, 53, 29];
+      expect(printer.checkUpdateOrder(update)).toBe(true);
+    });
 
-    updatesProvider.forEach((testCase) => {
-      test(`should check if ${testCase.update.join(
-        ','
-      )} is ordered correctly`, () => {
-        expect(printer.checkUpdateOrder(testCase.update)).toBe(
-          testCase.expected
-        );
-      });
+    test('should check if 97,61,53,29,13 is ordered correctly', () => {
+      const update = [97, 61, 53, 29, 13];
+      expect(printer.checkUpdateOrder(update)).toBe(true);
+    });
+
+    test('should check if 75,29,13 is ordered correctly', () => {
+      const update = [75, 29, 13];
+      expect(printer.checkUpdateOrder(update)).toBe(true);
+    });
+
+    test('should check if 75,97,47,61,53 is ordered correctly', () => {
+      const update = [75, 97, 47, 61, 53];
+      expect(printer.checkUpdateOrder(update)).toBe(false);
+    });
+
+    test('should check if 61,13,29 is ordered correctly', () => {
+      const update = [61, 13, 29];
+      expect(printer.checkUpdateOrder(update)).toBe(false);
+    });
+
+    test('should check if 97,13,75,29,47 is ordered correctly', () => {
+      const update = [97, 13, 75, 29, 47];
+      expect(printer.checkUpdateOrder(update)).toBe(false);
     });
   });
 
@@ -40,70 +51,36 @@ describe('day-5', () => {
   });
 
   describe('Reordering incorrect updates', () => {
-    const updatesProvider = [
-      {
-        update: ['75', '97', '47', '61', '53'],
-        expected: ['97', '75', '47', '61', '53'],
-      },
-      { update: ['61', '13', '29'], expected: ['61', '29', '13'] },
-      {
-        update: ['97', '13', '75', '29', '47'],
-        expected: ['97', '75', '47', '29', '13'],
-      },
-      {
-        update: [
-          '31',
-          '14',
-          '72',
-          '52',
-          '46',
-          '38',
-          '49',
-          '76',
-          '74',
-          '22',
-          '98',
-          '68',
-          '29',
-          '75',
-          '89',
-          '21',
-          '77',
-        ],
-        expected: [
-          '31',
-          '14',
-          '72',
-          '52',
-          '46',
-          '38',
-          '49',
-          '76',
-          '74',
-          '22',
-          '98',
-          '68',
-          '75',
-          '29',
-          '89',
-          '21',
-          '77',
-        ],
-      },
-      {
-        update: ['21', '25', '67', '34', '75', '29', '52'],
-        expected: ['21', '25', '67', '34', '75', '29', '52'],
-      },
-    ];
+    test("should reorder '75,97,47,61,53' => '97,75,47,61,53'", () => {
+      expect(printer.reorderUpdate([75, 97, 47, 61, 53])).toStrictEqual([
+        97, 75, 47, 61, 53,
+      ]);
+    });
 
-    updatesProvider.forEach((testCase) => {
-      test(`should reorder '${testCase.update.join(
-        ','
-      )}' => '${testCase.expected.join(',')}'`, () => {
-        expect(printer.reorderUpdate(testCase.update)).toStrictEqual(
-          testCase.expected
-        );
-      });
+    test("should reorder '61,13,29' => '61,29,13'", () => {
+      expect(printer.reorderUpdate([61, 13, 29])).toStrictEqual([61, 29, 13]);
+    });
+
+    test("should reorder '97,13,75,29,47' => '97,75,47,29,13'", () => {
+      expect(printer.reorderUpdate([97, 13, 75, 29, 47])).toStrictEqual([
+        97, 75, 47, 29, 13,
+      ]);
+    });
+
+    test("should reorder '31,14,72,52,46,38,49,76,74,22,98,68,29,75,89,21,77' => '31,14,72,52,46,38,49,76,74,22,98,68,75,29,89,21,77'", () => {
+      expect(
+        printer.reorderUpdate([
+          31, 14, 72, 52, 46, 38, 49, 76, 74, 22, 98, 68, 29, 75, 89, 21, 77,
+        ])
+      ).toStrictEqual([
+        31, 14, 72, 52, 46, 38, 49, 76, 74, 22, 98, 68, 75, 29, 89, 21, 77,
+      ]);
+    });
+
+    test("should reorder '21,25,67,34,75,29,52' => '21,25,67,34,75,29,52'", () => {
+      expect(printer.reorderUpdate([21, 25, 67, 34, 75, 29, 52])).toStrictEqual(
+        [21, 25, 67, 34, 75, 29, 52]
+      );
     });
   });
 
