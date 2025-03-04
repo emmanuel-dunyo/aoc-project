@@ -1,17 +1,18 @@
 import path from 'path';
 import fs from 'fs';
-import { LabPatrol } from './day-6';
+import { LabPatrol } from './part-1';
+import { convertLayoutToArray } from '../helpers';
 
 let patrol: LabPatrol;
 
 beforeEach(() => {
-  const filePath = path.resolve(__dirname, 'test-input.txt');
+  const filePath = path.resolve(__dirname, '../test-input.txt');
   const data = fs.readFileSync(filePath, 'utf-8');
 
   patrol = new LabPatrol(data);
 });
 
-describe('day-6', () => {
+describe('day-6 Pt.1', () => {
   describe('Getting guard position', () => {
     test('should get coordinate {col: 4, row: 6} for the guard position', () => {
       const layout = `....#.....
@@ -23,10 +24,9 @@ describe('day-6', () => {
       .#..^.....
       ........#.
       #.........
-      ......#...`
-        .split('\n')
-        .map((line) => line.trim().split(''));
-      expect(patrol.getPosition(layout)).toEqual({ col: 4, row: 6 });
+      ......#...`;
+      const layoutArray = convertLayoutToArray(layout);
+      expect(patrol.getPosition(layoutArray)).toEqual({ col: 4, row: 6 });
     });
     test('should get coordinate {col: 9, row: 3} for the guard position', () => {
       const layout = `....#.....
@@ -38,25 +38,9 @@ describe('day-6', () => {
       .#........
       ........#.
       #.........
-      ......#...`
-        .split('\n')
-        .map((line) => line.trim().split(''));
-      expect(patrol.getPosition(layout)).toEqual({ col: 9, row: 3 });
-    });
-    test('should get null coordinate for no guard in the area', () => {
-      const layout = `....#.....
-      .........#
-      ..........
-      ..#.......
-      .......#..
-      ..........
-      .#........
-      ........#.
-      #.........
-      ......#...`
-        .split('\n')
-        .map((line) => line.trim().split(''));
-      expect(patrol.getPosition(layout)).toBe(null);
+      ......#...`;
+      const layoutArray = convertLayoutToArray(layout);
+      expect(patrol.getPosition(layoutArray)).toEqual({ col: 9, row: 3 });
     });
   });
   describe('Checking for obstructions', () => {
@@ -70,10 +54,9 @@ describe('day-6', () => {
   .#..^.....
   ........#.
   #.........
-  ......#...`
-        .split('\n')
-        .map((line) => line.trim().split(''));
-      expect(patrol.checkObstructionAhead(layout)).toBe(false);
+  ......#...`;
+      const layoutArray = convertLayoutToArray(layout);
+      expect(patrol.checkObstructionAhead(layoutArray)).toBe(false);
     });
     test('should return true where there is an obstruction ahead', () => {
       const layout = `....#.....
@@ -85,10 +68,9 @@ describe('day-6', () => {
   .#........
   ........#.
   #.........
-  ......#...`
-        .split('\n')
-        .map((line) => line.trim().split(''));
-      expect(patrol.checkObstructionAhead(layout)).toBe(true);
+  ......#...`;
+      const layoutArray = convertLayoutToArray(layout);
+      expect(patrol.checkObstructionAhead(layoutArray)).toBe(true);
     });
     test('should return false if the guard is no longer in the area', () => {
       const layout = `....#.....
@@ -100,10 +82,9 @@ describe('day-6', () => {
   .#........
   ........#.
   #.........
-  ......#...`
-        .split('\n')
-        .map((line) => line.trim().split(''));
-      expect(patrol.checkObstructionAhead(layout)).toBe(false);
+  ......#...`;
+      const layoutArray = convertLayoutToArray(layout);
+      expect(patrol.checkObstructionAhead(layoutArray)).toBe(false);
     });
   });
 
@@ -118,22 +99,46 @@ describe('day-6', () => {
       .#..^.....
       ........#.
       #.........
-      ......#...`
-        .split('\n')
-        .map((line) => line.trim().split(''));
-      const newPositionLayout = `....#.....
+      ......#...`;
+      const layoutArray = convertLayoutToArray(layout);
+      const newLayout = `....#.....
       .........#
       ..........
       ..#.......
       .......#..
       ....^.....
+      .#..X.....
+      ........#.
+      #.........
+      ......#...`;
+      const newLayoutArray = convertLayoutToArray(newLayout);
+      expect(patrol.stepForward(layoutArray)).toStrictEqual(newLayoutArray);
+    });
+    test('should take a step out of the area if there are no obstacles ahead', () => {
+      const layout = `...^#.....
+      .........#
+      ..........
+      ..#.......
+      .......#..
+      ..........
       .#........
       ........#.
       #.........
-      ......#...`
-        .split('\n')
-        .map((line) => line.trim().split(''));
-      expect(patrol.stepForward(layout)).toStrictEqual(newPositionLayout);
+      ......#...`;
+      const newLayout = `...X#.....
+      .........#
+      ..........
+      ..#.......
+      .......#..
+      ..........
+      .#........
+      ........#.
+      #.........
+      ......#...`;
+
+      const layoutArray = convertLayoutToArray(layout);
+      const newLayoutArray = convertLayoutToArray(newLayout);
+      expect(patrol.stepForward(layoutArray)).toStrictEqual(newLayoutArray);
     });
     test('should NOT take a step if there is an obstacle ahead', () => {
       const layout = `....#.....
@@ -145,37 +150,9 @@ describe('day-6', () => {
       .#........
       ........#.
       #.........
-      ......#...`
-        .split('\n')
-        .map((line) => line.trim().split(''));
-      expect(patrol.stepForward(layout)).toStrictEqual(layout);
-    });
-    test('should leave area when guard gets to the edge', () => {
-      const layout = `...^#.....
-      .........#
-      ..........
-      ..#.......
-      .......#..
-      ..........
-      .#........
-      ........#.
-      #.........
-      ......#...`
-        .split('\n')
-        .map((line) => line.trim().split(''));
-      const newLayout = `....#.....
-        .........#
-        ..........
-        ..#.......
-        .......#..
-        ..........
-        .#........
-        ........#.
-        #.........
-        ......#...`
-        .split('\n')
-        .map((line) => line.trim().split(''));
-      expect(patrol.stepForward(layout)).toStrictEqual(newLayout);
+      ......#...`;
+      const layoutArray = convertLayoutToArray(layout);
+      expect(patrol.stepForward(layoutArray)).toStrictEqual(layoutArray);
     });
   });
 
@@ -190,9 +167,8 @@ describe('day-6', () => {
       .#........
       ........#.
       #.........
-      ......#...`
-        .split('\n')
-        .map((line) => line.trim().split(''));
+      ......#...`;
+      const layoutArray = convertLayoutToArray(layout);
 
       const newLayout = `.#........
       .......#..
@@ -203,11 +179,10 @@ describe('day-6', () => {
       ..........
       ...#......
       ......#...
-      ........#.`
-        .split('\n')
-        .map((line) => line.trim().split(''));
+      ........#.`;
+      const newLayoutArray = convertLayoutToArray(newLayout);
 
-      expect(patrol.avoidObstacle(layout)).toStrictEqual(newLayout);
+      expect(patrol.avoidObstacle(layoutArray)).toStrictEqual(newLayoutArray);
     });
   });
 

@@ -14,30 +14,18 @@ export class LabPatrol {
     this.layout = patrolLayout.split('\n').map((line) => line.trim().split(''));
   }
 
-  getPosition(layout: string[][]): CoordsClass | null {
+  getPosition(layout: string[][]): CoordsClass {
     const row = layout.findIndex((row) => {
       return row.includes('^');
     });
     const col = row > -1 ? layout[row].indexOf('^') : -1;
-    if (col > -1) {
-      return new CoordsClass(row, col);
-    }
-
-    return null;
+    return new CoordsClass(row, col);
   }
 
   checkObstructionAhead(layout: string[][]): boolean {
     const position = this.getPosition(layout);
 
-    if (!position) {
-      return false;
-    }
-
-    if (position.row < 0) {
-      return false;
-    }
-
-    if (position.row - 1 < 0) {
+    if (position.row <= 0) {
       return false;
     }
 
@@ -47,27 +35,23 @@ export class LabPatrol {
   stepForward(layout: string[][]): string[][] {
     const position = this.getPosition(layout);
 
-    if (!position) {
-      return layout;
-    }
-
     const { row, col } = position;
 
-    if (this.checkObstructionAhead(layout) && row - 1 > -1) {
+    if (this.checkObstructionAhead(layout)) {
       return layout;
     }
 
     const newLayout = layout.map((row) => [...row]);
-    if (row - 1 > -1) {
+    if (row > 0) {
       newLayout[row - 1][col] = '^';
     }
-    newLayout[row][col] = '.';
+    newLayout[row][col] = 'X';
 
     return newLayout;
   }
 
   avoidObstacle(layout: string[][]): string[][] {
-    const rotatedLayout = layout[0].map((val, index) =>
+    const rotatedLayout = layout[0].map((_, index) =>
       layout.map((row) => row[row.length - 1 - index])
     );
 
@@ -80,38 +64,37 @@ export class LabPatrol {
 
   getSumOfSteps(): number {
     let layout = this.layout;
-    let coords: GuardCoord[] = [];
 
-    let count: number = 0;
-
-    while (this.getPosition(layout)) {
-      console.log(layout.map((x) => x.join('')).join('\n'));
+    while (true) {
+      const { row } = this.getPosition(layout);
+      if (row === -1) {
+        break;
+      }
 
       let newLayout = layout;
       if (this.checkObstructionAhead(layout)) {
         newLayout = this.avoidObstacle(layout);
       }
 
-      const position = this.getPosition(newLayout);
-      if (position) {
-        console.log(position);
-        coords.push(position);
-      }
-
       layout = this.stepForward(newLayout);
-      count++;
     }
 
-    console.log(coords);
-    console.log('count', count);
+    return layout.flatMap((rows) => rows.filter((row) => row.includes('X')))
+      .length;
+  }
 
-    // return uniqueCoords.filter(
-    //   (coord, index) =>
-    //     index ===
-    //     uniqueCoords.findIndex(
-    //       (x) => x.col === coord.col && x.row === coord.row
-    //     )
-    // ).length;
-    return coords.length;
+  addObstruction(position: string): string {
+    switch (position) {
+      case '.':
+        return 'O';
+      case '#':
+      case '^':
+      default:
+        return position;
+    }
+  }
+
+  checkPathLoops(layout: string[][]): boolean {
+    return true;
   }
 }
