@@ -10,8 +10,8 @@ class CoordsClass implements GuardCoord {
 export class LabPatrol {
   layout: string[][] = [];
 
-  constructor(patrolLayout: string) {
-    this.layout = patrolLayout.split('\n').map((line) => line.trim().split(''));
+  constructor(patrolLayout: string[][]) {
+    this.layout = patrolLayout;
   }
 
   getPosition(layout: string[][]): CoordsClass {

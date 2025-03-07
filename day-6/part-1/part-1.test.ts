@@ -9,7 +9,9 @@ beforeEach(() => {
   const filePath = path.resolve(__dirname, '../test-input.txt');
   const data = fs.readFileSync(filePath, 'utf-8');
 
-  patrol = new LabPatrol(data);
+  const layoutArray = convertLayoutToArray(data);
+
+  patrol = new LabPatrol(layoutArray);
 });
 
 describe('day-6 Pt.1', () => {
