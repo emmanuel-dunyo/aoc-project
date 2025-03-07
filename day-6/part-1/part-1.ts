@@ -82,19 +82,4 @@ export class LabPatrol {
     return layout.flatMap((rows) => rows.filter((row) => row.includes('X')))
       .length;
   }
-
-  addObstruction(position: string): string {
-    switch (position) {
-      case '.':
-        return 'O';
-      case '#':
-      case '^':
-      default:
-        return position;
-    }
-  }
-
-  checkPathLoops(layout: string[][]): boolean {
-    return true;
-  }
 }
