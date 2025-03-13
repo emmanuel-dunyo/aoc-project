@@ -1,11 +1,4 @@
-type GuardCoord = {
-  row: number;
-  col: number;
-};
-
-class Coord implements GuardCoord {
-  constructor(readonly row: number, readonly col: number) {}
-}
+import { Coord } from '../Coord';
 
 export class LabPatrol {
   layout: string[][] = [];
