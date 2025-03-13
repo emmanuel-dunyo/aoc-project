@@ -3,7 +3,7 @@ type GuardCoord = {
   col: number;
 };
 
-class CoordsClass implements GuardCoord {
+class Coord implements GuardCoord {
   constructor(readonly row: number, readonly col: number) {}
 }
 
@@ -14,12 +14,14 @@ export class LabPatrol {
     this.layout = patrolLayout;
   }
 
-  getPosition(layout: string[][]): CoordsClass {
+  getPosition(layout: string[][]): Coord {
     const row = layout.findIndex((row) => {
       return row.includes('^');
     });
+
     const col = row > -1 ? layout[row].indexOf('^') : -1;
-    return new CoordsClass(row, col);
+
+    return new Coord(row, col);
   }
 
   checkObstructionAhead(layout: string[][]): boolean {
@@ -51,15 +53,9 @@ export class LabPatrol {
   }
 
   avoidObstruction(layout: string[][]): string[][] {
-    const rotatedLayout = layout[0].map((_, index) =>
+    return layout[0].map((_, index) =>
       layout.map((row) => row[row.length - 1 - index])
     );
-
-    if (this.checkObstructionAhead(layout)) {
-      return rotatedLayout;
-    }
-
-    return layout;
   }
 
   getSumOfSteps(): number {
@@ -71,12 +67,11 @@ export class LabPatrol {
         break;
       }
 
-      let newLayout = layout;
       if (this.checkObstructionAhead(layout)) {
-        newLayout = this.avoidObstruction(layout);
+        layout = this.avoidObstruction(layout);
       }
 
-      layout = this.stepForward(newLayout);
+      layout = this.stepForward(layout);
     }
 
     return layout.flatMap((rows) => rows.filter((row) => row.includes('X')))
