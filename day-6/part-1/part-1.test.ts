@@ -89,7 +89,6 @@ describe('day-6 Pt.1', () => {
       expect(patrol.checkObstructionAhead(layoutArray)).toBe(false);
     });
   });
-
   describe('Taking steps', () => {
     test('should take a step if there are no obstacles ahead', () => {
       const layout = `....#.....
@@ -157,7 +156,6 @@ describe('day-6 Pt.1', () => {
       expect(patrol.stepForward(layoutArray)).toStrictEqual(layoutArray);
     });
   });
-
   describe('Avoiding obstructions', () => {
     test('should turn right 90 degress at the obstruction', () => {
       const layout = `....#.....
@@ -184,10 +182,11 @@ describe('day-6 Pt.1', () => {
       ........#.`;
       const newLayoutArray = convertLayoutToArray(newLayout);
 
-      expect(patrol.avoidObstacle(layoutArray)).toStrictEqual(newLayoutArray);
+      expect(patrol.avoidObstruction(layoutArray)).toStrictEqual(
+        newLayoutArray
+      );
     });
   });
-
   describe('Counting patrol steps', () => {
     test('should get the sum of unique steps', () => {
       expect(patrol.getSumOfSteps()).toBe(41);

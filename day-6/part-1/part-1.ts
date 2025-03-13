@@ -50,7 +50,7 @@ export class LabPatrol {
     return newLayout;
   }
 
-  avoidObstacle(layout: string[][]): string[][] {
+  avoidObstruction(layout: string[][]): string[][] {
     const rotatedLayout = layout[0].map((_, index) =>
       layout.map((row) => row[row.length - 1 - index])
     );
@@ -73,7 +73,7 @@ export class LabPatrol {
 
       let newLayout = layout;
       if (this.checkObstructionAhead(layout)) {
-        newLayout = this.avoidObstacle(layout);
+        newLayout = this.avoidObstruction(layout);
       }
 
       layout = this.stepForward(newLayout);
