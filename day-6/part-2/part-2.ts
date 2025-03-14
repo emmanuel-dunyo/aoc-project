@@ -1,11 +1,5 @@
-type GuardCoord = {
-  row: number;
-  col: number;
-};
-
-class Coord implements GuardCoord {
-  constructor(readonly row: number, readonly col: number) {}
-}
+import { Coord } from '../Coord';
+import { cloneLayout } from '../helpers';
 
 export class LabPatrol {
   layout: string[][] = [];
@@ -42,7 +36,7 @@ export class LabPatrol {
       return layout;
     }
 
-    const newLayout = layout.map((row) => [...row]);
+    const newLayout = cloneLayout(layout);
     if (row > 0) {
       newLayout[row - 1][col] = '^';
     }
@@ -59,7 +53,7 @@ export class LabPatrol {
     const guardPosition = this.getPosition(rotatedLayout, '^');
     const { row, col } = guardPosition;
 
-    const newLayout = rotatedLayout.map((row) => [...row]);
+    const newLayout = cloneLayout(rotatedLayout);
     if (row > 0) {
       newLayout[row - 1][col] = '^';
     }
@@ -74,7 +68,7 @@ export class LabPatrol {
     const guardPosition = this.getPosition(layout, '^');
     const { row, col } = guardPosition;
 
-    const newLayout = layout.map((row) => [...row]);
+    const newLayout = cloneLayout(layout);
 
     if (row > 0) {
       newLayout[row - 1][col] = '^';
@@ -84,103 +78,39 @@ export class LabPatrol {
     return newLayout;
   }
 
-  addObstruction(position: string): string {
-    switch (position) {
-      case '.':
-        return 'O';
-      case '#':
-      case '^':
-      default:
-        return position;
-    }
-  }
+  getSumOfLoopOptions(): number {
+    let count = 0;
 
-  removeObstruction(layout: string[][]): string[][] {
-    const { row, col } = this.getPosition(layout, 'O');
-    if (row > 0) {
-      layout[row][col] = '.';
-    }
+    for (let rowIndex = 0; rowIndex < this.layout.length; rowIndex++) {
+      const row = this.layout[rowIndex];
+      for (let colIndex = 0; colIndex < row.length; colIndex++) {
+        let layout = cloneLayout(this.layout);
 
-    return layout;
-  }
+        // add obstruction
+        layout[rowIndex][colIndex] = 'O';
+        // console.log(rowIndex, colIndex, layout);
 
-  // ....#.....
-  // ....+...+#
-  // ..........
-  // ..#.......
-  // .......#..
-  // ....^.....
-  // .#.O+...+.
-  // ........#.
-  // #.........
-  // ......#...
-
-  // 1. 1,4: 2,3 -> 3,2 -> 4,1 -> 5,0
-  // 2,3 checks: 1,3 && 2,4
-
-  detectLoop(layout: string[][]): boolean {
-    const positions: Coord[] = [];
-
-    layout.forEach((row, rowIndex) => {
-      row.forEach((position, colIndex) => {
-        if (position === '+') {
-          positions.push(new Coord(rowIndex, colIndex));
-        }
-      });
-    });
-
-    // 1. 1,4: 2,3 -> 3,2 -> 4,1 -> 5,0
-    // 2,3 checks: 1,3 && 2,4
-
-    let detected: boolean = false;
-
-    for (const position of positions) {
-      // get all the rest of the '+' on that row
-
-      // for each of the other positions, now check if there are corecponding '+' in the rest of the columns
-      for (
-        let rowIndex = position.row + 1;
-        rowIndex < layout.length;
-        rowIndex++
-      ) {
-        const rowAvoidCoords = positions.filter(
-          (rowPosition) =>
-            rowPosition.row === position.row &&
-            !(
-              rowPosition.row === position.row &&
-              rowPosition.col === position.col
-            )
-        );
-
-        for (const avoidCoord of rowAvoidCoords) {
-          // console.log(
-          //   '🚀 ~ detectLoop:',
-          //   rowIndex,
-          //   position,
-          //   rowAvoidCoords,
-          //   layout[rowIndex][position.col],
-          //   position.col,
-          //   layout[rowIndex][avoidCoord.col],
-          //   avoidCoord.col
-          // );
-
-          if (
-            layout[rowIndex][position.col] === '+' &&
-            layout[rowIndex][avoidCoord.col] === '+'
-          ) {
-            detected = true;
+        // patrol the lab
+        while (true) {
+          const { row } = this.getPosition(layout, '^');
+          if (row === -1) {
             break;
           }
+
+          if (this.checkObstructionAhead(layout)) {
+            // console.log(rowIndex, colIndex, layout);
+            layout = this.avoidObstruction(layout);
+          }
+
+          layout = this.stepForward(layout);
+          // console.log(rowIndex, colIndex, layout);
         }
-        if (detected) break;
+
+        // remove obstruction
+        layout[rowIndex][colIndex] = '.';
       }
-      if (detected) break;
     }
 
-    return detected || false;
-  }
-
-  getSumOfLoopOptions(): number {
-    return 6;
+    return count;
   }
 }
