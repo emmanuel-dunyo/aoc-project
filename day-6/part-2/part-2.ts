@@ -25,7 +25,7 @@ export class LabPatrol {
 
     const positionAhead = layout[guardPosition.row - 1][guardPosition.col];
 
-    return positionAhead === '#' || positionAhead === 'O';
+    return positionAhead === 'O' || positionAhead === '#';
   }
 
   stepForward(layout: string[][]): string[][] {
@@ -57,7 +57,7 @@ export class LabPatrol {
     if (row > 0) {
       newLayout[row - 1][col] = '^';
     }
-    newLayout[row][col] = '+';
+    newLayout[row][col] = '.';
 
     return newLayout;
   }
@@ -73,7 +73,7 @@ export class LabPatrol {
     if (row > 0) {
       newLayout[row - 1][col] = '^';
     }
-    newLayout[row][col] = isAvoiding ? '+' : '.';
+    newLayout[row][col] = '.';
 
     return newLayout;
   }
@@ -82,15 +82,25 @@ export class LabPatrol {
     let count = 0;
 
     for (let rowIndex = 0; rowIndex < this.layout.length; rowIndex++) {
-      const row = this.layout[rowIndex];
-      for (let colIndex = 0; colIndex < row.length; colIndex++) {
+      for (
+        let colIndex = 0;
+        colIndex < this.layout[rowIndex].length;
+        colIndex++
+      ) {
+        if (
+          this.layout[rowIndex][colIndex] === '#' ||
+          this.layout[rowIndex][colIndex] === '^'
+        ) {
+          continue;
+        }
+
         let layout = cloneLayout(this.layout);
 
-        // add obstruction
         layout[rowIndex][colIndex] = 'O';
-        // console.log(rowIndex, colIndex, layout);
 
-        // patrol the lab
+        const seenLayouts = new Set<string>();
+        seenLayouts.add(JSON.stringify(layout));
+
         while (true) {
           const { row } = this.getPosition(layout, '^');
           if (row === -1) {
@@ -98,15 +108,20 @@ export class LabPatrol {
           }
 
           if (this.checkObstructionAhead(layout)) {
-            // console.log(rowIndex, colIndex, layout);
             layout = this.avoidObstruction(layout);
           }
 
           layout = this.stepForward(layout);
-          // console.log(rowIndex, colIndex, layout);
+
+          const layoutString = JSON.stringify(layout);
+          if (seenLayouts.has(layoutString)) {
+            count++;
+            break;
+          }
+
+          seenLayouts.add(layoutString);
         }
 
-        // remove obstruction
         layout[rowIndex][colIndex] = '.';
       }
     }
