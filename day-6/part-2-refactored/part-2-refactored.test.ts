@@ -477,3 +477,7 @@ describe('Refactored part 2', () => {
     });
   });
 });
+
+// calculate the guard path - without actually moving the guard.
+// place the obstruction in each cell/coord in the guard's path
+// calculate if they'll be in loop maybe can do this without actually moving the guard
