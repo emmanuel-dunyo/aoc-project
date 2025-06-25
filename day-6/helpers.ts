@@ -9,3 +9,10 @@ export function convertArrayToLayout(array: string[][]): string {
 export function cloneLayout(layout: string[][]): string[][] {
   return layout.map((row) => [...row]);
 }
+
+export function convertToArray(str: string): string[] {
+  return str
+    .trim()
+    .split('\n')
+    .map((line) => line.trim());
+}
