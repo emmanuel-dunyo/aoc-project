@@ -76,27 +76,32 @@ describe('Part 2', () => {
     });
   });
 
-  // describe('Simulating with an obstacle', () => {
-  //   it('should detect a loop when obstacle causes right turns', () => {
-  //     const result = patrol.simulateWithObstacle(2, 2);
-  //     expect(result).toBe(true);
-  //   });
+  describe('Simulating with an obstacle', () => {
+    it('should detect a loop when an obstacle is placed in row 6 col 3', () => {
+      const result = patrol.simulateWithObstacle(6, 3);
+      expect(result).toBe(true);
+    });
 
-  //   it('should detect a loop even without immediate obstacle', () => {
-  //     const result = patrol.simulateWithObstacle(3, 2);
-  //     expect(result).toBe(true);
-  //   });
+    it('should NOT detect a loop when an obstacle is placed in row 0 col 0', () => {
+      const result = patrol.simulateWithObstacle(0, 0);
+      expect(result).toBe(false);
+    });
 
-  //   it('should detect exit from grid when path is open', () => {
-  //     const result = patrol.simulateWithObstacle(-1, -1);
-  //     expect(result).toBe(false);
-  //   });
+    it('should detect a loop when an obstacle is placed in row 7 col 6', () => {
+      const result = patrol.simulateWithObstacle(7, 6);
+      expect(result).toBe(true);
+    });
 
-  //   it('should still loop without added obstacle', () => {
-  //     const result = patrol.simulateWithObstacle(-1, -1);
-  //     expect(result).toBe(true);
-  //   });
-  // });
+    it('should detect a loop when an obstacle is placed in row 8 col 1', () => {
+      const result = patrol.simulateWithObstacle(8, 1);
+      expect(result).toBe(true);
+    });
+
+    it('should NOT detect a loop when an obstacle is placed in row 8 col 2', () => {
+      const result = patrol.simulateWithObstacle(8, 2);
+      expect(result).toBe(false);
+    });
+  });
 
   it('should count valid positions where a new obstacle causes a loop', () => {
     expect(patrol.countValidObstructionPositions()).toEqual(6);
