@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { LabPatrol } from './part-2';
 import path from 'path';
-import { convertToArray } from '../helpers';
+import { convertToArray } from '../../helpers';
 
 let patrol: LabPatrol;
 
